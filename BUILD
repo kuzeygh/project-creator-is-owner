@@ -7,8 +7,8 @@ gerrit_plugin(
         "Gerrit-PluginName: project-creator-is-owner",
         "Gerrit-Module: com.nabisoft.gerrit.plugins.projectcreatorisowner.ProjectCreatorIsOwner$Module",
         "Implementation-Title: Making the project creator the initial project owner",
-        "Implementation-Version: 0.1",
-        "Implementation-Vendor: nabisoft GmbH",
+        "Implementation-Version: v2.16-SNAPSHOT",
+        "Implementation-Vendor: Nabi Zamani, nabisoft GmbH",
     ],
     resources = glob(["src/main/resources/**/*"]),
 )
