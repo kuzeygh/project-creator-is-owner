@@ -1,0 +1,28 @@
+# build artefacts
+build
+dist
+bin
+
+# Eclipse
+.project
+.classpath
+.settings/
+.launch
+.launch/
+
+# Netbeans
+nb-configuration.xml
+
+# IntelliJ
+.idea/
+*.iml/
+*.iws
+
+# visual studio code
+.vscode
+
+# Mac
+.DS_Store
+
+# Other
+log
