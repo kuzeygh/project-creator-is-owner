@@ -58,13 +58,13 @@ class ProjectCreatorIsOwner implements NewProjectCreatedListener {
 			AccessSection all = config.getAccessSection(AccessSection.ALL, true);
 			IdentifiedUser identUser = identifiedUser.get();
 			
-			AccountGroup.UUID ownerId = new AccountGroup.UUID("user:" + identUser.getUserName().get());
+			AccountGroup.UUID ownerId = new AccountGroup.UUID("user:" + identUser.getUserName());
 			GroupDescription.Basic g = groupBackend.get(ownerId);
 			
 			if(g != null) {
 				GroupReference group = config.resolve(GroupReference.forGroup(g));
 				all.getPermission(Permission.OWNER, true).add(new PermissionRule(group));
-				String msg = String.format("Make project creator '%s' owner of project '%s'", identUser.getUserName().get(), projectName);
+				String msg = String.format("Make project creator '%s' owner of project '%s'", identUser.getUserName(), projectName);
 				md.setMessage(msg + "\n");
 				config.commit(md);
 				log.info(msg);
