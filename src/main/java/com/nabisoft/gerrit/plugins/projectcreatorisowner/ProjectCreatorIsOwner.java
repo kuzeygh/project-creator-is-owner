@@ -67,6 +67,7 @@ class ProjectCreatorIsOwner implements NewProjectCreatedListener {
 				String msg = String.format("Make project creator '%s' owner of project '%s'", identUser.getUserName(), projectName);
 				md.setMessage(msg + "\n");
 				config.commit(md);
+				md.close();
 				log.info(msg);
 			} else {
 				log.warn("singleusergroup plugin seems not to be installed, thus can't make project creator a project owner.");
