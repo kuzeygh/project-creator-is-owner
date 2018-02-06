@@ -19,6 +19,7 @@ import com.google.gerrit.server.IdentifiedUser;
 import com.google.gerrit.server.account.GroupBackend;
 import com.google.gerrit.server.git.MetaDataUpdate;
 import com.google.gerrit.server.git.ProjectConfig;
+import com.google.gerrit.server.project.ProjectCache;
 import com.google.inject.AbstractModule;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -35,15 +36,23 @@ class ProjectCreatorIsOwner implements NewProjectCreatedListener {
 		}
 	}
 
-	private final MetaDataUpdate.User metaDataUpdateFactory;
+	private final MetaDataUpdate.Server metaDataUpdateFactory;
 	private final GroupBackend groupBackend;
 	private final Provider<IdentifiedUser> identifiedUser;
+	private final ProjectCache projectCache;
 	
 	@Inject
-	ProjectCreatorIsOwner(MetaDataUpdate.User metaDataUpdateFactory, GroupBackend groupBackend, Provider<IdentifiedUser> identifiedUser) {
+	ProjectCreatorIsOwner(
+			MetaDataUpdate.Server metaDataUpdateFactory, 
+			GroupBackend groupBackend, 
+			Provider<IdentifiedUser> identifiedUser,
+			ProjectCache projectCache) {
+		
 		this.metaDataUpdateFactory	= metaDataUpdateFactory;
 		this.groupBackend			= groupBackend;
 		this.identifiedUser			= identifiedUser;
+		this.projectCache			= projectCache;
+	
 	}
 
 	@Override
@@ -55,6 +64,7 @@ class ProjectCreatorIsOwner implements NewProjectCreatedListener {
 		try {
 			MetaDataUpdate md = metaDataUpdateFactory.create(p);
 			ProjectConfig config = ProjectConfig.read(md);
+			
 			AccessSection all = config.getAccessSection(AccessSection.ALL, true);
 			IdentifiedUser identUser = identifiedUser.get();
 			
@@ -64,11 +74,11 @@ class ProjectCreatorIsOwner implements NewProjectCreatedListener {
 			if(g != null) {
 				GroupReference group = config.resolve(GroupReference.forGroup(g));
 				all.getPermission(Permission.OWNER, true).add(new PermissionRule(group));
-				String msg = String.format("Make project creator '%s' owner of project '%s'", identUser.getUserName(), projectName);
-				md.setMessage(msg + "\n");
+				md.setMessage( String.format("Add project owner: '%s' \n", identUser.getUserName() ) );
 				config.commit(md);
 				md.close();
-				log.info(msg);
+				projectCache.evict(config.getProject());
+				log.info( String.format("Make project creator '%s' owner of project '%s'", identUser.getUserName(), projectName) );
 			} else {
 				log.warn("singleusergroup plugin seems not to be installed, thus can't make project creator a project owner.");
 			}
